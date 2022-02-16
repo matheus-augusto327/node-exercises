@@ -14,11 +14,12 @@ function handleFile(req, res, callback) {
 
     fs.readFile(fileName, (err, data) => {
         if (err) {
-            if(callback) {
-                callback(req, res)
+            if (callback) {
+                if (!callback(req, res)) {
+                    res.writeHead(404, { "Content-Type": "text/html;charset=utf-8" })
+                    res.end("<h1>Página não encontrada</h1>")
+                }
             }
-            res.writeHead(404, { "Content-Type": "text/html;charset=utf-8" })
-            res.end("<h1>Página não encontrada</h1>")
         } else {
             res.writeHead(200, { "Content_Type": "text-html" })
             res.write(data)
@@ -32,11 +33,17 @@ function handleRequest(req, res) {
 
     let path = url.parse(req.url).pathname
 
+    let method = req.method
+    console.log(method)
+    if (method == "PUT") {
+        res.writeHead(404, { "Content-Type": "text/html;charset=utf-8" })
+    }
+
     if (path == "/teste") {
         res.end("Teste")
         return true
     }
-    
+
     return false
 
 }
